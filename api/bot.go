@@ -23,37 +23,37 @@ func init() {
 
 		// 检查是否有新消息
 		if update.Message != nil {
-			// 获取用户发送的消息内容
-			message := update.Message.Text
-			// 获取用户的 ID
-			userID := update.Message.From.ID
-			// 获取用户的用户名
-			username := update.Message.From.UserName
-
 			// 处理用户发送的消息
-			handleMessage(userID, username, message)
+			handleMessage(update.Message)
 		}
 
 		c.String(http.StatusOK, "OK")
 	})
 }
 
-func handleMessage(userID int64, username string, message string) {
+func handleMessage(message *tgbotapi.Message) {
+	msg := message.Text
+	userID := message.From.ID
+	username := message.From.UserName
+	msgID := message.MessageID
 	// 根据用户发送的消息进行处理
-	switch message {
+	switch msg {
 	case "/start":
 		sendMessage(userID, "Hello, "+username+"! I'm your Telegram bot.")
 	case "/help":
 		sendMessage(userID, "How can I help you?")
 	default:
-		sendMessage(userID, "You said: "+message)
+		sendMessage(userID, "You said: "+msg, msgID)
 	}
 }
 
-func sendMessage(userID int64, message string) {
+func sendMessage(userID int64, message string, replyMsgID ...int) {
 	// 发送消息给用户
 	bot, _ := tgbotapi.NewBotAPI(token)
 	msg := tgbotapi.NewMessage(userID, message)
+	if replyMsgID[0] != 0 {
+		msg.ReplyToMessageID = replyMsgID[0]
+	}
 	bot.Send(msg)
 }
 
