@@ -51,7 +51,7 @@ func sendMessage(userID int64, message string, replyMsgID ...int) {
 	// 发送消息给用户
 	bot, _ := tgbotapi.NewBotAPI(token)
 	msg := tgbotapi.NewMessage(userID, message)
-	if replyMsgID[0] != 0 {
+	if replyMsgID != nil {
 		msg.ReplyToMessageID = replyMsgID[0]
 	}
 	bot.Send(msg)
